@@ -1,0 +1,25 @@
+Relevant information about GPU:
+--deviceQuery--
+"GeForce GT 610" - Capability 2.1
+48 Cuda cores, 1981 MBytes of global memory
+
+--nbody--
+3.152 billion interactions per second
+63.040 single-precision GFLOP/s at 20 flops per interaction
+
+Note on GPU ~~ I have to do some extra stuff to use cuda-gdb because I only have one GPU and it won't let me debug with cuda-gdb at the same time the program is running. I looked at some stuff online and it made my screen turn black with some text and I could not interact with the screen, so I will have to work out a way to get cuda-gdb to work.
+
+Coding Exercise:
+1) All functions work properly.
+2) All functions return the correct values.
+3) Created the necessary files and makefile. This was a pain in the butt but it all works now and I am pretty happy with it!
+
+4a) The fundamental difference between euclidean norm/inner product and the other functions is that instead of storing each of the values found by the device into a separate memory slot in an array, the euclidean norm/inner product both need to add all of their components up into a single memory slot.
+
+4b) You cannot declare a variable within the kernel that accumulates contributions, because that would create a variable in each thread that can only be accessed in the same thread. In other words, we need to get the contributions from all the threads into one variable.
+
+4c) You can declare a variable in the wrapper function that can accumulate data from the computations in the kernel.
+
+Try it: With higher array lengths, w2.w2 gets higher, but is definitely not the same value as the array length. This is because the threads access the memory of the accumulating variable at the same times. Some of the values I got for array length = 100,000: 560, 548, 568, 536, 533, 534, 538, and 593.
+
+4d) You can not make a parallel reversed dot product because the GPU sends the information back in the order the tasks are completed, not the order of the multiplied arrays. Reversing the dot product would require organizing the values, then adding them in serial. This would not be parallel computing anymore.
